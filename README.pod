@@ -1,0 +1,14 @@
+=pod
+
+=head1 NAME
+
+Catalyst::Plugin::Starch - Catalyst session plugin via Web::Starch.
+
+=head1 DESCRIPTION
+
+This module is API compliant with L<Catalyst::Plugin::Session>.  The way you
+configure this plugin will be different, but all your code that uses sessions, or
+other plugins that use sessions, should not need to be changed unless they
+depend on undocumented features.
+
+=cut
