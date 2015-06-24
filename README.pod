@@ -4,11 +4,91 @@
 
 Catalyst::Plugin::Starch - Catalyst session plugin via Web::Starch.
 
-=head1 DESCRIPTION
+=head1 COMPATIBILITY
 
-This module is API compliant with L<Catalyst::Plugin::Session>.  The way you
+This module is mostly API compliant with L<Catalyst::Plugin::Session>.  The way you
 configure this plugin will be different, but all your code that uses sessions, or
 other plugins that use sessions, should not need to be changed unless they
 depend on undocumented features.
+
+Everything documented in the L<Catalyst::Plugin::Session/METHODS> section is
+supported except for:
+
+=over
+
+=item *
+
+The C<session_expires> and C<change_session_expires> methods are not supported
+as starch has the concept of multiple layered stores which may have different
+expiration times per-store.
+
+=item *
+
+The C<flash>, C<clear_flash>, and C<keep_flash> methods are not implemented
+as its really a terrible idea.  If this becomes a big issue for compatibility
+with existing code and plugins then this may be reconsidered.
+
+=item *
+
+The C<session_expire_key> method is not supported, but can be if it is deemed
+a good feature to port.
+
+=back
+
+The above listed un-implemented methods and attributes will throw an exception
+if called.
+
+=head1 ATTRIBUTES
+
+=head2 sessionid
+
+The ID of the session.
+
+=head2 session_delete_reason
+
+Returns the C<reason> value passsed to L</delete_session>.
+Two common values are:
+
+=over
+
+=item *
+
+C<address mismatch>
+
+=item *
+
+C<session expired>
+
+=back
+
+=head1 METHODS
+
+=head2 session
+
+    $c->session->{foo} = 45;
+    $c->session( foo => 45 );
+    $c->session({ foo => 45 });
+
+Returns a hashref of the session data which may be modified and
+will be stored at the end of the request.
+
+A hash list or a hash ref may be passed to set values.
+
+=head2 delete_session
+
+    $c->delete_session();
+
+Deletes the session.
+
+=head2 change_session_id
+
+    $c->change_session_id();
+
+Generates a new ID for the session but retains the session
+data in the new session.
+
+Some interesting discussion as to why this is useful is at
+L<Catalyst::Plugin::Session/METHODS> under the C<change_session_id>
+method.
 
 =cut

@@ -4,116 +4,251 @@ package Catalyst::Plugin::Starch;
 
 Catalyst::Plugin::Starch - Catalyst session plugin via Web::Starch.
 
-=head1 DESCRIPTION
+=cut
 
-This module is API compliant with L<Catalyst::Plugin::Session>.  The way you
+use Web::Starch;
+use Types::Standard -types;
+use Types::Common::String -types;
+use Catalyst::Exception;
+
+use Moose::Role;
+use strictures 2;
+use namespace::clean;
+
+sub BUILD {
+  my ($c) = @_;
+
+  # Get the starch object instantiated as early as possible.
+  $c->starch();
+
+  return;
+}
+
+=head1 COMPATIBILITY
+
+This module is mostly API compliant with L<Catalyst::Plugin::Session>.  The way you
 configure this plugin will be different, but all your code that uses sessions, or
 other plugins that use sessions, should not need to be changed unless they
 depend on undocumented features.
 
+Everything documented in the L<Catalyst::Plugin::Session/METHODS> section is
+supported except for:
+
+=over
+
+=item *
+
+The C<session_expires> and C<change_session_expires> methods are not supported
+as starch has the concept of multiple layered stores which may have different
+expiration times per-store.
+
+=item *
+
+The C<flash>, C<clear_flash>, and C<keep_flash> methods are not implemented
+as its really a terrible idea.  If this becomes a big issue for compatibility
+with existing code and plugins then this may be reconsidered.
+
+=item *
+
+The C<session_expire_key> method is not supported, but can be if it is deemed
+a good feature to port.
+
+=back
+
+The above listed un-implemented methods and attributes will throw an exception
+if called.
+
 =cut
 
-use Session::Manager;
-use Log;
-
-use Types::Standard -types;
-
-use Moose::Role;
-use strictures 1;
-use namespace::clean;
-
-sub BUILD {
-  my ($self) = @_;
-
-  # Get the session manager instantiated as early as possible.
-  $self->_session_manager();
-
-  return;
+sub session_expires {
+    Catalyst::Exception->throw( 'The session_expires method is not implemented by Catalyst::Plugin::Starch' );
 }
 
-has _session_manager => (
-  is  => 'lazy',
-  isa => InstanceOf[ 'Session::Manager' ],
+sub change_session_expires {
+    Catalyst::Exception->throw( 'The change_session_expires method is not implemented by Catalyst::Plugin::Starch' );
+}
+
+sub flash {
+    Catalyst::Exception->throw( 'The flash method is not implemented by Catalyst::Plugin::Starch' );
+}
+
+sub clear_flash {
+    Catalyst::Exception->throw( 'The clear_flash method is not implemented by Catalyst::Plugin::Starch' );
+}
+
+sub keep_flash {
+    Catalyst::Exception->throw( 'The keep_flash method is not implemented by Catalyst::Plugin::Starch' );
+}
+
+sub session_expire_key {
+    Catalyst::Exception->throw( 'The session_expire_key method is not implemented by Catalyst::Plugin::Starch' );
+}
+
+=head1 ATTRIBUTES
+
+=head2 sessionid
+
+The ID of the session.
+
+=cut
+
+has sessionid => (
+    is       => 'ro',
+    isa      => NonEmptySimpleStr,
+    init_arg => undef,
+    writer   => '_set_sessionid',
+    clearer  => '_clear_sessionid',
 );
-sub _build__session_manager {
-  return Session::Manager->new();
-}
 
-has _session_object => (
-  is        => 'lazy',
-  isa       => InstanceOf[ 'Session' ],
-  predicate => 1,
-  clearer   => 1,
+=head2 session_delete_reason
+
+Returns the C<reason> value passsed to L</delete_session>.
+Two common values are:
+
+=over
+
+=item *
+
+C<address mismatch>
+
+=item *
+
+C<session expired>
+
+=back
+
+=cut
+
+has session_delete_reason => (
+    is       => 'ro',
+    isa      => NonEmptySimpleStr,
+    init_arg => undef,
+    writer   => '_set_session_delete_reason',
+    clearer  => '_clear_session_delete_reason',
 );
-sub _build__session_object {
-  my ($c) = @_;
 
-  my $manager = $self->_sesssion_manager();
-  my $cookie_args = $manager->cookie_args();
+=head1 METHODS
 
-  my $cookie = $c->req->cookie( $cookie_args->{name} );
-  return $manager->session() if !$cookie;
+=head2 session
 
-  return $manager->session( $cookie->value() );
-}
+    $c->session->{foo} = 45;
+    $c->session( foo => 45 );
+    $c->session({ foo => 45 });
+
+Returns a hashref of the session data which may be modified and
+will be stored at the end of the request.
+
+A hash list or a hash ref may be passed to set values.
+
+=cut
 
 sub session {
-  my $c = shift;
+    my $c = shift;
 
-  my $data = $self->_session_object->data();
-  return $data if !@_;
+    my $data = $c->_starch_session->data();
+    return $data if !@_;
 
-  if (@_ == 1) {
-    %$data = (
-      %$data,
-      %{ $_[0] },
-    );
-  }
-  else {
-    %$data = (
-      %$data,
-      @_,
-    );
-  }
+    my $new_data;
+    if (@_==1 and ref($_[0]) eq 'HASH') {
+        $new_data = $_[0];
+    }
+    else {
+        $new_data = { @_ };
+    }
 
-  return;
+    foreach my $key (keys %$new_data) {
+        $data->{$key} = $new_data->{$key};
+    }
+
+    return $data;
 }
 
-after prepare_cookies => sub{
-  my ($c) = @_;
+=head2 delete_session
 
-  # This should never happen, and if it did it would be very bad as we'd
-  # be using a session object from a previous request.
-  if ($c->_has_session_object()) {
-    warn(
-      'Session object %s present too early in the request cycle',
-      $c->session_object->key(),
+    $c->delete_session();
+
+Deletes the session.
+
+=cut
+
+sub delete_session {
+    my ($c, $reason) = @_;
+
+    if ($c->_has_starch_session()) {
+        $c->_starch_session->expire();
+    }
+
+    $c->_set_session_delete_reason( $reason );
+
+    return;
+}
+
+=head2 change_session_id
+
+    $c->change_session_id();
+
+Generates a new ID for the session but retains the session
+data in the new session.
+
+Some interesting discussion as to why this is useful is at
+L<Catalyst::Plugin::Session/METHODS> under the C<change_session_id>
+method.
+
+=cut
+
+sub change_session_id {
+    my ($c) = @_;
+
+    $c->_clear_sessionid();
+    return if !$c->_has_starch_session();
+
+    $c->_starch_session->reset_id();
+
+    return;
+}
+
+has _starch => (
+    is      => 'lazy',
+    isa     => HasMethods[ 'session' ],
+    lazy    => 1,
+    builder => '_build_starch',
+);
+sub _build_starch {
+    my ($c) = @_;
+
+    return Web::Starch->new(
+
     );
+}
 
-    $c->_clear_session_object();
-  }
-
-  return;
-};
-
-before finalize_cookies => sub{
-  my ($c) = @_;
-
-  my $cookie_args = $c->_session_object->cookie_args();
-  my $name = delete $cookie_args->{name};
-
-  $c->res->cookies->{ $name } = $cookie_args;
-
-  return;
-};
+has _starch_session => (
+    is        => 'ro',
+    isa        => HasMethods[ 'save', 'expire' ],
+    lazy      => 1,
+    builder   => '_build_starch_session',
+    writer    => '_set_starch_session',
+    predicate => '_has_starch_session',
+    clearer   => '_clear_starch_session',
+);
+sub _build_starch_session {
+    my ($c) = @_;
+    my $session = $c->_starch->session( $c->sessionid() );
+    $c->_set_sessionid( $session->id() );
+    return $session;
+}
 
 before finalize_body => sub{
-  my ($c) = @_;
+    my ($c) = @_;
 
-  $self->_session_object->flush();
-  $self->_clear_session_object();
+    $c->_clear_sessionid();
+    $c->_clear_session_delete_reason();
 
-  return $c->$orig( @_ );
+    return if !$c->_has_starch_session();
+
+    $c->_starch_session->save();
+    $c->_clear_starch_session();
+
+    return;
 };
 
 1;
