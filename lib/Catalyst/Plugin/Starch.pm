@@ -4,12 +4,52 @@ package Catalyst::Plugin::Starch;
 
 Catalyst::Plugin::Starch - Catalyst session plugin via Web::Starch.
 
+=head1 SYNOPSIS
+
+    package MyApp;
+    
+    use Catalyst qw(
+        Starch
+        Starch::State::Cookie
+    );
+    
+    __PACKAGE__->config(
+        'Plugin::Starch' => {
+            cookie_name => 'my_session',
+            store => { class=>'::Memory' },
+        },
+    );
+
+=head1 DESCRIPTION
+
+Integrates L<Web::Starch> with L<Catalyst> providing a compatible replacement
+for L<Catalyst::Plugin::Session>.
+
+=head1 CONFIGURATION
+
+Configuring starch is a matter if setting the L<Plugin::Starch> configuration
+key in Catalyst as shown in the L</SYNOPSIS>.
+
+The value of this key can be one of three possiblities.  The typical
+setup would be passing L<Web::Starch> arguments:
+
+    __PACKAGE__->config(
+        'Plugin::Starch' => {
+            store => { class=>'::Memory' },
+        },
+    );
+
+In addition to the arguments you would normally pass you can also pass a
+a C<plugins> argument which will be combined with the plugins from
+L</default_starch_plugins>.
+
 =cut
 
 use Web::Starch;
 use Types::Standard -types;
 use Types::Common::String -types;
 use Catalyst::Exception;
+use Scalar::Util qw( blessed );
 
 use Moose::Role;
 use strictures 2;
@@ -23,6 +63,20 @@ sub BUILD {
 
   return;
 }
+
+before finalize_body => sub{
+    my ($c) = @_;
+
+    $c->_clear_sessionid();
+    $c->_clear_session_delete_reason();
+
+    return if !$c->_has_starch_session();
+
+    $c->starch_session->save();
+    $c->_clear_starch_session();
+
+    return;
+};
 
 =head1 COMPATIBILITY
 
@@ -84,6 +138,39 @@ sub session_expire_key {
     Catalyst::Exception->throw( 'The session_expire_key method is not implemented by Catalyst::Plugin::Starch' );
 }
 
+=head1 REQUIRED ARGUMENTS
+
+=head2 starch
+
+The L<Web::Starch> object.  This gets automatically constructed from
+the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
+
+=cut
+
+has starch => (
+    is      => 'lazy',
+    isa     => HasMethods[ 'session' ],
+    lazy    => 1,
+    builder => '_build_starch',
+);
+sub _build_starch {
+    my ($c) = @_;
+
+    my $starch = $c->config->{'Plugin::Starch'};
+    Catalyst::Exception->throw( 'No Catalyst configuration was specified for Plugin::Starch' ) if !$starch;
+    Catalyst::Exception->throw( 'Plugin::Starch config was not a hash ref' ) if ref($starch) ne 'HASH';
+
+    my $args = Web::Starch->BUILDARGS( $starch );
+    my $plugins = delete( $args->{plugins} ) || [];
+
+    $plugins = [
+        @{ $c->default_starch_plugins() },
+        @$plugins,
+    ];
+
+    return Web::Starch->new_with_plugins( $plugins, $args );
+}
+
 =head1 ATTRIBUTES
 
 =head2 sessionid
@@ -127,6 +214,40 @@ has session_delete_reason => (
     clearer  => '_clear_session_delete_reason',
 );
 
+=head2 default_starch_plugins
+
+This attribute returns the base set plugins that the L</starch>
+object will be built with.  Note that this does not include any
+additional plugins you specify in the L</CONFIGURATION>.
+
+=cut
+
+sub default_starch_plugins {
+    return [];
+}
+
+=head2 starch_session
+
+This holds the underlying L<Web::Starch::Session> object.
+
+=cut
+
+has starch_session => (
+    is        => 'ro',
+    isa        => HasMethods[ 'save', 'expire' ],
+    lazy      => 1,
+    builder   => '_build_starch_session',
+    writer    => '_set_starch_session',
+    predicate => '_has_starch_session',
+    clearer   => '_clear_starch_session',
+);
+sub _build_starch_session {
+    my ($c) = @_;
+    my $session = $c->starch->session( $c->sessionid() );
+    $c->_set_sessionid( $session->id() );
+    return $session;
+}
+
 =head1 METHODS
 
 =head2 session
@@ -145,7 +266,7 @@ A hash list or a hash ref may be passed to set values.
 sub session {
     my $c = shift;
 
-    my $data = $c->_starch_session->data();
+    my $data = $c->starch_session->data();
     return $data if !@_;
 
     my $new_data;
@@ -176,7 +297,7 @@ sub delete_session {
     my ($c, $reason) = @_;
 
     if ($c->_has_starch_session()) {
-        $c->_starch_session->expire();
+        $c->starch_session->expire();
     }
 
     $c->_set_session_delete_reason( $reason );
@@ -203,54 +324,10 @@ sub change_session_id {
     $c->_clear_sessionid();
     return if !$c->_has_starch_session();
 
-    $c->_starch_session->reset_id();
+    $c->starch_session->reset_id();
 
     return;
 }
-
-has _starch => (
-    is      => 'lazy',
-    isa     => HasMethods[ 'session' ],
-    lazy    => 1,
-    builder => '_build_starch',
-);
-sub _build_starch {
-    my ($c) = @_;
-
-    return Web::Starch->new(
-
-    );
-}
-
-has _starch_session => (
-    is        => 'ro',
-    isa        => HasMethods[ 'save', 'expire' ],
-    lazy      => 1,
-    builder   => '_build_starch_session',
-    writer    => '_set_starch_session',
-    predicate => '_has_starch_session',
-    clearer   => '_clear_starch_session',
-);
-sub _build_starch_session {
-    my ($c) = @_;
-    my $session = $c->_starch->session( $c->sessionid() );
-    $c->_set_sessionid( $session->id() );
-    return $session;
-}
-
-before finalize_body => sub{
-    my ($c) = @_;
-
-    $c->_clear_sessionid();
-    $c->_clear_session_delete_reason();
-
-    return if !$c->_has_starch_session();
-
-    $c->_starch_session->save();
-    $c->_clear_starch_session();
-
-    return;
-};
 
 1;
 __END__
