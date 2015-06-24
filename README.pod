@@ -28,10 +28,7 @@ for L<Catalyst::Plugin::Session>.
 =head1 CONFIGURATION
 
 Configuring starch is a matter if setting the L<Plugin::Starch> configuration
-key in Catalyst as shown in the L</SYNOPSIS>.
-
-The value of this key can be one of three possiblities.  The typical
-setup would be passing L<Web::Starch> arguments:
+key in your root Catalyst application class:
 
     __PACKAGE__->config(
         'Plugin::Starch' => {
@@ -39,9 +36,9 @@ setup would be passing L<Web::Starch> arguments:
         },
     );
 
-In addition to the arguments you would normally pass you can also pass a
-a C<plugins> argument which will be combined with the plugins from
-L</default_starch_plugins>.
+In addition to the arguments you would normally pass to L<Web::Starch> you
+can also pass a C<plugins> argument which will be combined with the plugins
+from L</default_starch_plugins>.
 
 =head1 COMPATIBILITY
 

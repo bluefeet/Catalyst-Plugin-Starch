@@ -58,3 +58,10 @@ around default_starch_plugins => sub{
 };
 
 1;
+__END__
+
+=head1 AUTHOR AND LICENSE
+
+See L<Catalyst::Plugin::Starch/AUTHOR> and
+L<Catalyst::Plugin::Starch/LICENSE>.
+
