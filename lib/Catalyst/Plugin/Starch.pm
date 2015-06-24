@@ -180,11 +180,12 @@ The ID of the session.
 =cut
 
 has sessionid => (
-    is       => 'ro',
-    isa      => NonEmptySimpleStr,
-    init_arg => undef,
-    writer   => '_set_sessionid',
-    clearer  => '_clear_sessionid',
+    is        => 'ro',
+    isa       => NonEmptySimpleStr,
+    init_arg  => undef,
+    writer    => '_set_sessionid',
+    clearer   => '_clear_sessionid',
+    predicate => '_has_sessionid',
 );
 
 =head2 session_delete_reason
