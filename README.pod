@@ -77,8 +77,9 @@ A hash list or a hash ref may be passed to set values.
 =head2 delete_session
 
     $c->delete_session();
+    $c->delete_session( $reason );
 
-Deletes the session.
+Deletes the session, optionally with a reason specified.
 
 =head2 change_session_id
 

@@ -166,8 +166,9 @@ sub session {
 =head2 delete_session
 
     $c->delete_session();
+    $c->delete_session( $reason );
 
-Deletes the session.
+Deletes the session, optionally with a reason specified.
 
 =cut
 
