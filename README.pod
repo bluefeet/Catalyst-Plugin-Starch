@@ -74,13 +74,6 @@ a good feature to port.
 The above listed un-implemented methods and attributes will throw an exception
 if called.
 
-=head1 REQUIRED ARGUMENTS
-
-=head2 starch
-
-The L<Web::Starch> object.  This gets automatically constructed from
-the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
-
 =head1 ATTRIBUTES
 
 =head2 sessionid
@@ -109,6 +102,11 @@ C<session expired>
 This attribute returns the base set plugins that the L</starch>
 object will be built with.  Note that this does not include any
 additional plugins you specify in the L</CONFIGURATION>.
+
+=head2 starch
+
+The L<Web::Starch> object.  This gets automatically constructed from
+the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
 
 =head2 starch_session
 

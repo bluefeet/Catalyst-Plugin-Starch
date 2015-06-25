@@ -135,39 +135,6 @@ sub session_expire_key {
     Catalyst::Exception->throw( 'The session_expire_key method is not implemented by Catalyst::Plugin::Starch' );
 }
 
-=head1 REQUIRED ARGUMENTS
-
-=head2 starch
-
-The L<Web::Starch> object.  This gets automatically constructed from
-the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
-
-=cut
-
-has starch => (
-    is      => 'ro',
-    isa     => HasMethods[ 'session' ],
-    lazy    => 1,
-    builder => '_build_starch',
-);
-sub _build_starch {
-    my ($c) = @_;
-
-    my $starch = $c->config->{'Plugin::Starch'};
-    Catalyst::Exception->throw( 'No Catalyst configuration was specified for Plugin::Starch' ) if !$starch;
-    Catalyst::Exception->throw( 'Plugin::Starch config was not a hash ref' ) if ref($starch) ne 'HASH';
-
-    my $args = Web::Starch->BUILDARGS( $starch );
-    my $plugins = delete( $args->{plugins} ) || [];
-
-    $plugins = [
-        @{ $c->default_starch_plugins() },
-        @$plugins,
-    ];
-
-    return Web::Starch->new_with_plugins( $plugins, $args );
-}
-
 =head1 ATTRIBUTES
 
 =head2 sessionid
@@ -222,6 +189,37 @@ additional plugins you specify in the L</CONFIGURATION>.
 
 sub default_starch_plugins {
     return [];
+}
+
+=head2 starch
+
+The L<Web::Starch> object.  This gets automatically constructed from
+the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
+
+=cut
+
+has starch => (
+    is      => 'ro',
+    isa     => HasMethods[ 'session' ],
+    lazy    => 1,
+    builder => '_build_starch',
+);
+sub _build_starch {
+    my ($c) = @_;
+
+    my $starch = $c->config->{'Plugin::Starch'};
+    Catalyst::Exception->throw( 'No Catalyst configuration was specified for Plugin::Starch' ) if !$starch;
+    Catalyst::Exception->throw( 'Plugin::Starch config was not a hash ref' ) if ref($starch) ne 'HASH';
+
+    my $args = Web::Starch->BUILDARGS( $starch );
+    my $plugins = delete( $args->{plugins} ) || [];
+
+    $plugins = [
+        @{ $c->default_starch_plugins() },
+        @$plugins,
+    ];
+
+    return Web::Starch->new_with_plugins( $plugins, $args );
 }
 
 =head2 starch_session
