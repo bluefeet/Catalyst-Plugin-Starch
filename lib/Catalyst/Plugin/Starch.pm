@@ -61,7 +61,7 @@ sub BUILD {
   return;
 }
 
-before finalize_body => sub{
+after finalize_body => sub{
     my ($c) = @_;
 
     $c->_clear_sessionid();
@@ -145,7 +145,7 @@ the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
 =cut
 
 has starch => (
-    is      => 'lazy',
+    is      => 'ro',
     isa     => HasMethods[ 'session' ],
     lazy    => 1,
     builder => '_build_starch',

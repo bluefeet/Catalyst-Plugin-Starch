@@ -42,7 +42,7 @@ before finalize_cookies => sub{
     return if !$c->_has_sessionid();
 
     $c->res->cookies->{ $c->starch->cookie_name() } =
-        $c->starch->cookie_args();
+        $c->starch_session->cookie_args();
 
     return;
 };
