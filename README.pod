@@ -71,6 +71,30 @@ a good feature to port.
 
 =back
 
+Everything in the L<Catalyst::Plugin::Session/INTERNAL METHODS> section is
+supported except for:
+
+=over
+
+=item *
+
+The
+C<check_session_plugin_requirements>, C<setup_session>, C<initialize_session_data>,
+C<validate_session_id>, C<generate_session_id>, C<session_hash_seed>,
+C<calculate_extended_session_expires>, C<calculate_initial_session_expires>,
+C<create_session_id_if_needed>, C<delete_session_id>, C<extend_session_expires>,
+C<extend_session_id>, C<get_session_id>, C<reset_session_expires>, C<session_is_valid>,
+C<set_session_id>, and C<initial_session_expires>
+methods are not supported.  Some of them could be, if a good case for their
+existance presents itself.
+
+=item *
+
+The C<setup>, C<prepare_action>, and C<finalize_headers> methods are not altered
+because they do not need to be.
+
+=back
+
 The above listed un-implemented methods and attributes will throw an exception
 if called.
 
@@ -142,6 +166,36 @@ data in the new session.
 Some interesting discussion as to why this is useful is at
 L<Catalyst::Plugin::Session/METHODS> under the C<change_session_id>
 method.
+
+=head2 session_is_valid
+
+Currently this always returns C<1>.
+
+=head1 INTERNAL METHODS
+
+These methods are internal to this plugin and should not be called
+outside of it without exterme caution.
+
+=head2 finalize_session
+
+This is called by L</finalize_body> to save the session data near the
+end of the request.
+
+=head1 MODIFIED METHODS
+
+These methods in the Catalyst application object are modified.
+See L<Catalyst::Manual::Internals> for more information.
+
+=head2 finalize_body
+
+Saves the session data, before C<finalize_body> is called, by calling
+L</finalize_session>.
+
+=head2 dump_these
+
+Adds the session data to the C<dump_these> method's array
+ref so that the session is include on the Catalyst debug
+page.
 
 =head1 AUTHOR
 
