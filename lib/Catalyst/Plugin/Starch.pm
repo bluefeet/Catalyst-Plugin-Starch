@@ -61,20 +61,6 @@ sub BUILD {
   return;
 }
 
-after finalize_body => sub{
-    my ($c) = @_;
-
-    $c->_clear_sessionid();
-    $c->_clear_session_delete_reason();
-
-    return if !$c->_has_starch_session();
-
-    $c->starch_session->save();
-    $c->_clear_starch_session();
-
-    return;
-};
-
 =head1 COMPATIBILITY
 
 This module is mostly API compliant with L<Catalyst::Plugin::Session>.  The way you
@@ -103,6 +89,30 @@ with existing code and plugins then this may be reconsidered.
 
 The C<session_expire_key> method is not supported, but can be if it is deemed
 a good feature to port.
+
+=back
+
+Everything in the L<Catalyst::Plugin::Session/INTERNAL METHODS> section is
+supported except for:
+
+=over
+
+=item *
+
+The
+C<check_session_plugin_requirements>, C<setup_session>, C<initialize_session_data>,
+C<validate_session_id>, C<generate_session_id>, C<session_hash_seed>,
+C<calculate_extended_session_expires>, C<calculate_initial_session_expires>,
+C<create_session_id_if_needed>, C<delete_session_id>, C<extend_session_expires>,
+C<extend_session_id>, C<get_session_id>, C<reset_session_expires>, C<session_is_valid>,
+C<set_session_id>, and C<initial_session_expires>
+methods are not supported.  Some of them could be, if a good case for their
+existance presents itself.
+
+=item *
+
+The C<setup>, C<prepare_action>, and C<finalize_headers> methods are not altered
+because they do not need to be.
 
 =back
 
@@ -324,6 +334,79 @@ sub change_session_id {
 
     return;
 }
+
+=head2 session_is_valid
+
+Currently this always returns C<1>.
+
+=cut
+
+sub session_is_valid { 1 }
+
+=head1 INTERNAL METHODS
+
+These methods are internal to this plugin and should not be called
+outside of it without exterme caution.
+
+=head2 finalize_session
+
+This is called by L</finalize_body> to save the session data near the
+end of the request.
+
+=cut
+
+sub finalize_session {
+    my ($c) = @_;
+
+    $c->_clear_sessionid();
+    $c->_clear_session_delete_reason();
+
+    return if !$c->_has_starch_session();
+
+    $c->starch_session->save();
+    $c->_clear_starch_session();
+
+    return;
+}
+
+=head1 MODIFIED METHODS
+
+These methods in the Catalyst application object are modified.
+See L<Catalyst::Manual::Internals> for more information.
+
+=head2 finalize_body
+
+Saves the session data, before C<finalize_body> is called, by calling
+L</finalize_session>.
+
+=cut
+
+before finalize_body => sub{
+    my ($c) = @_;
+    $c->finalize_session();
+    return;
+};
+
+=head2 dump_these
+
+Adds the session data to the C<dump_these> method's array
+ref so that the session is include on the Catalyst debug
+page.
+
+=cut
+
+around dump_these => sub{
+    my $orig = shift;
+    my $c = shift;
+
+    return $c->$orig( @_ ) if !$c->_has_sessionid();
+
+    return(
+      $c->$orig( @_ ),
+      [ 'SessionID' => $c->sessionid() ],
+      [ 'Session'   => $c->session()   ],
+    );
+};
 
 1;
 __END__
