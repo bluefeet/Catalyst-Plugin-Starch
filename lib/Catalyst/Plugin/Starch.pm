@@ -27,7 +27,7 @@ for L<Catalyst::Plugin::Session>.
 
 =head1 CONFIGURATION
 
-Configuring starch is a matter if setting the L<Plugin::Starch> configuration
+Configuring Starch is a matter of setting the L<Plugin::Starch> configuration
 key in your root Catalyst application class:
 
     __PACKAGE__->config(
@@ -55,7 +55,7 @@ use namespace::clean;
 sub BUILD {
   my ($c) = @_;
 
-  # Get the starch object instantiated as early as possible.
+  # Get the Starch object instantiated as early as possible.
   $c->starch();
 
   return;
@@ -76,7 +76,7 @@ supported except for:
 =item *
 
 The C<session_expires> and C<change_session_expires> methods are not supported
-as starch has the concept of multiple layered stores which may have different
+as Starch has the concept of multiple layered stores which may have different
 expiration times per-store.
 
 =item *
@@ -194,6 +194,11 @@ has session_delete_reason => (
 This attribute returns the base set plugins that the L</starch>
 object will be built with.  Note that this does not include any
 additional plugins you specify in the L</CONFIGURATION>.
+
+The intention of this attribute is for other Catalyst plugins, such as
+L<Catalyst::Plugin::Starch::State::Cookie>, to be able to declare
+additional Starch plugins by C<around()>ing this and injecting
+their own plugins into the array ref.
 
 =cut
 

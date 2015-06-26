@@ -16,7 +16,7 @@ Catalyst::Plugin::Starch::State::Cookie - Record Web::Starch session state in a 
 =head1 DESCRIPTION
 
 This plugin utilizes the L<Web::Starch::Plugin::CookieArgs> plugin to add
-a bunch of arguments to the starch object, search the request cookies for
+a bunch of arguments to the Starch object, search the request cookies for
 the session cookie, and write the session cookie at the end of the request.
 
 See the L<Web::Starch::Plugin::CookieArgs::Manager> documentation for a
