@@ -215,7 +215,7 @@ the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
 
 has starch => (
     is      => 'ro',
-    isa     => HasMethods[ 'session' ],
+    isa     => InstanceOf[ 'Web::Starch' ],
     lazy    => 1,
     builder => '_build_starch',
 );
@@ -245,7 +245,7 @@ This holds the underlying L<Web::Starch::Session> object.
 
 has starch_session => (
     is        => 'ro',
-    isa        => HasMethods[ 'save', 'expire' ],
+    isa        => InstanceOf[ 'Web::Starch::Session' ],
     lazy      => 1,
     builder   => '_build_starch_session',
     writer    => '_set_starch_session',
