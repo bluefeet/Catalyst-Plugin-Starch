@@ -75,12 +75,6 @@ supported except for:
 
 =item *
 
-The C<session_expires> and C<change_session_expires> methods are not supported
-as Starch has the concept of multiple layered stores which may have different
-expiration times per-store.
-
-=item *
-
 The C<flash>, C<clear_flash>, and C<keep_flash> methods are not implemented
 as its really a terrible idea.  If this becomes a big issue for compatibility
 with existing code and plugins then this may be reconsidered.
@@ -121,14 +115,6 @@ if called.
 
 =cut
 
-sub session_expires {
-    Catalyst::Exception->throw( 'The session_expires method is not implemented by Catalyst::Plugin::Starch' );
-}
-
-sub change_session_expires {
-    Catalyst::Exception->throw( 'The change_session_expires method is not implemented by Catalyst::Plugin::Starch' );
-}
-
 sub flash {
     Catalyst::Exception->throw( 'The flash method is not implemented by Catalyst::Plugin::Starch' );
 }
@@ -161,6 +147,20 @@ has sessionid => (
     clearer   => '_clear_sessionid',
     predicate => '_has_sessionid',
 );
+
+=head2 session_expires
+
+Returns the time when the session will expire (in epoch time).  If there
+is no session then C<0> will be returned.
+
+=cut
+
+sub session_expires {
+    my ($self) = @_;
+    return 0 if !$self->_has_sessionid();
+    my $session = $self->starch_session();
+    return $session->modified() + $session->expires();
+}
 
 =head2 session_delete_reason
 
@@ -337,6 +337,19 @@ sub change_session_id {
 
     $c->starch_session->reset_id();
 
+    return;
+}
+
+=head2 change_session_expires
+
+Sets the expires duration on the session which defaults to the
+global expires set in L</CONFIGURATION>.
+
+=cut
+
+sub change_session_expires {
+    my $self = shift;
+    $self->starch_session->set_expires( @_ );
     return;
 }
 

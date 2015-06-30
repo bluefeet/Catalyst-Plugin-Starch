@@ -54,12 +54,6 @@ supported except for:
 
 =item *
 
-The C<session_expires> and C<change_session_expires> methods are not supported
-as Starch has the concept of multiple layered stores which may have different
-expiration times per-store.
-
-=item *
-
 The C<flash>, C<clear_flash>, and C<keep_flash> methods are not implemented
 as its really a terrible idea.  If this becomes a big issue for compatibility
 with existing code and plugins then this may be reconsidered.
@@ -103,6 +97,11 @@ if called.
 =head2 sessionid
 
 The ID of the session.
+
+=head2 session_expires
+
+Returns the time when the session will expire (in epoch time).  If there
+is no session then C<0> will be returned.
 
 =head2 session_delete_reason
 
@@ -171,6 +170,11 @@ data in the new session.
 Some interesting discussion as to why this is useful is at
 L<Catalyst::Plugin::Session/METHODS> under the C<change_session_id>
 method.
+
+=head2 change_session_expires
+
+Sets the expires duration on the session which defaults to the
+global expires set in L</CONFIGURATION>.
 
 =head2 session_is_valid
 
