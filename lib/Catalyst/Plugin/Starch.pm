@@ -40,6 +40,8 @@ In addition to the arguments you would normally pass to L<Web::Starch> you
 can also pass a C<plugins> argument which will be combined with the plugins
 from L</default_starch_plugins>.
 
+See L<Web::Starch::Manual> for more information about configuring Starch.
+
 =cut
 
 use Web::Starch;
@@ -47,6 +49,7 @@ use Types::Standard -types;
 use Types::Common::String -types;
 use Catalyst::Exception;
 use Scalar::Util qw( blessed );
+use Class::Method::Modifiers qw( fresh );
 
 use Moose::Role;
 use strictures 2;
@@ -98,7 +101,7 @@ C<check_session_plugin_requirements>, C<setup_session>, C<initialize_session_dat
 C<validate_session_id>, C<generate_session_id>, C<session_hash_seed>,
 C<calculate_extended_session_expires>, C<calculate_initial_session_expires>,
 C<create_session_id_if_needed>, C<delete_session_id>, C<extend_session_expires>,
-C<extend_session_id>, C<get_session_id>, C<reset_session_expires>, C<session_is_valid>,
+C<extend_session_id>, C<get_session_id>, C<reset_session_expires>,
 C<set_session_id>, and C<initial_session_expires>
 methods are not supported.  Some of them could be, if a good case for their
 existance presents itself.
@@ -115,20 +118,19 @@ if called.
 
 =cut
 
-sub flash {
-    Catalyst::Exception->throw( 'The flash method is not implemented by Catalyst::Plugin::Starch' );
-}
-
-sub clear_flash {
-    Catalyst::Exception->throw( 'The clear_flash method is not implemented by Catalyst::Plugin::Starch' );
-}
-
-sub keep_flash {
-    Catalyst::Exception->throw( 'The keep_flash method is not implemented by Catalyst::Plugin::Starch' );
-}
-
-sub session_expire_key {
-    Catalyst::Exception->throw( 'The session_expire_key method is not implemented by Catalyst::Plugin::Starch' );
+foreach my $method (qw(
+    flash clear_flash keep_flash
+    session_expire_key
+    check_session_plugin_requirements setup_session initialize_session_data
+    validate_session_id generate_session_id session_hash_seed
+    calculate_extended_session_expires calculate_initial_session_expires
+    create_session_id_if_needed delete_session_id extend_session_expires
+    extend_session_id get_session_id reset_session_expires
+    set_session_id initial_session_expires
+)) {
+    fresh $method => sub{
+        Catalyst::Exception->throw( "The $method method is not implemented by Catalyst::Plugin::Starch" );
+    };
 }
 
 =head1 ATTRIBUTES

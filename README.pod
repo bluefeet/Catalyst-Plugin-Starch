@@ -40,6 +40,8 @@ In addition to the arguments you would normally pass to L<Web::Starch> you
 can also pass a C<plugins> argument which will be combined with the plugins
 from L</default_starch_plugins>.
 
+See L<Web::Starch::Manual> for more information about configuring Starch.
+
 =head1 COMPATIBILITY
 
 This module is mostly API compliant with L<Catalyst::Plugin::Session>.  The way you
@@ -77,7 +79,7 @@ C<check_session_plugin_requirements>, C<setup_session>, C<initialize_session_dat
 C<validate_session_id>, C<generate_session_id>, C<session_hash_seed>,
 C<calculate_extended_session_expires>, C<calculate_initial_session_expires>,
 C<create_session_id_if_needed>, C<delete_session_id>, C<extend_session_expires>,
-C<extend_session_id>, C<get_session_id>, C<reset_session_expires>, C<session_is_valid>,
+C<extend_session_id>, C<get_session_id>, C<reset_session_expires>,
 C<set_session_id>, and C<initial_session_expires>
 methods are not supported.  Some of them could be, if a good case for their
 existance presents itself.
