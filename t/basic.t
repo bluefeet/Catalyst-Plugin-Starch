@@ -44,7 +44,6 @@ our $starch;
         'Plugin::Starch' => {
             store => {
                 class  => '::Memory',
-                global => 1,
             },
             cookie_secure    => 0,
             cookie_http_only => 0,

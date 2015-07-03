@@ -52,17 +52,9 @@ use Scalar::Util qw( blessed );
 use Class::Method::Modifiers qw( fresh );
 
 use Moose::Role;
+use MooseX::ClassAttribute;
 use strictures 2;
 use namespace::clean;
-
-sub BUILD {
-  my ($c) = @_;
-
-  # Get the Starch object instantiated as early as possible.
-  $c->starch();
-
-  return;
-}
 
 =head1 COMPATIBILITY
 
@@ -208,6 +200,30 @@ sub default_starch_plugins {
     return [];
 }
 
+=head2 starch_session
+
+This holds the underlying L<Web::Starch::Session> object.
+
+=cut
+
+has starch_session => (
+    is        => 'ro',
+    isa        => InstanceOf[ 'Web::Starch::Session' ],
+    lazy      => 1,
+    builder   => '_build_starch_session',
+    writer    => '_set_starch_session',
+    predicate => '_has_starch_session',
+    clearer   => '_clear_starch_session',
+);
+sub _build_starch_session {
+    my ($c) = @_;
+    my $session = $c->starch->session( $c->sessionid() );
+    $c->_set_sessionid( $session->id() );
+    return $session;
+}
+
+=head1 CLASS ATTRIBUTES
+
 =head2 starch
 
 The L<Web::Starch> object.  This gets automatically constructed from
@@ -215,7 +231,7 @@ the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
 
 =cut
 
-has starch => (
+class_has starch => (
     is      => 'ro',
     isa     => InstanceOf[ 'Web::Starch' ],
     lazy    => 1,
@@ -237,28 +253,6 @@ sub _build_starch {
     ];
 
     return Web::Starch->new_with_plugins( $plugins, $args );
-}
-
-=head2 starch_session
-
-This holds the underlying L<Web::Starch::Session> object.
-
-=cut
-
-has starch_session => (
-    is        => 'ro',
-    isa        => InstanceOf[ 'Web::Starch::Session' ],
-    lazy      => 1,
-    builder   => '_build_starch_session',
-    writer    => '_set_starch_session',
-    predicate => '_has_starch_session',
-    clearer   => '_clear_starch_session',
-);
-sub _build_starch_session {
-    my ($c) = @_;
-    my $session = $c->starch->session( $c->sessionid() );
-    $c->_set_sessionid( $session->id() );
-    return $session;
 }
 
 =head1 METHODS

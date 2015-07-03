@@ -133,14 +133,16 @@ L<Catalyst::Plugin::Starch::State::Cookie>, to be able to declare
 additional Starch plugins by C<around()>ing this and injecting
 their own plugins into the array ref.
 
+=head2 starch_session
+
+This holds the underlying L<Web::Starch::Session> object.
+
+=head1 CLASS ATTRIBUTES
+
 =head2 starch
 
 The L<Web::Starch> object.  This gets automatically constructed from
 the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
-
-=head2 starch_session
-
-This holds the underlying L<Web::Starch::Session> object.
 
 =head1 METHODS
 
