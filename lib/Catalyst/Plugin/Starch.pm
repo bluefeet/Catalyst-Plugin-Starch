@@ -304,7 +304,7 @@ sub delete_session {
     my ($c, $reason) = @_;
 
     if ($c->_has_starch_session()) {
-        $c->starch_session->expire();
+        $c->starch_session->delete();
     }
 
     $c->_set_session_delete_reason( $reason );
@@ -329,9 +329,10 @@ sub change_session_id {
     my ($c) = @_;
 
     $c->_clear_sessionid();
-    return if !$c->_has_starch_session();
 
-    $c->starch_session->reset_id();
+    $c->starch_session->reset_id() if $c->_has_starch_session();
+
+    $c->_set_sessionid( $c->starch_session->id() );
 
     return;
 }
