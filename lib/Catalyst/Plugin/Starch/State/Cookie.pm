@@ -31,11 +31,6 @@ use Moose::Role;
 use strictures 2;
 use namespace::clean;
 
-requires qw(
-  starch
-  starch_session
-);
-
 =head1 COMPATIBILITY
 
 Most of the methods documented in
