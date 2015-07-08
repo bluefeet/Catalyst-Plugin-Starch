@@ -389,6 +389,19 @@ sub finalize_session {
 These methods in the Catalyst application object are modified.
 See L<Catalyst::Manual::Internals> for more information.
 
+=head2 setup
+
+After Catalyst's C<setup> this calls L</starch> so that the Starch
+object gets built as early as possible.
+
+=cut
+
+after setup => sub{
+    my ($c) = @_;
+    $c->starch();
+    return;
+};
+
 =head2 finalize_body
 
 Saves the session data, before C<finalize_body> is called, by calling
