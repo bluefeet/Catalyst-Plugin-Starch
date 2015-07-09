@@ -389,14 +389,14 @@ sub finalize_session {
 These methods in the Catalyst application object are modified.
 See L<Catalyst::Manual::Internals> for more information.
 
-=head2 setup
+=head2 setup_finalize
 
-After Catalyst's C<setup> this calls L</starch> so that the Starch
+After Catalyst's C<setup_finalize> this calls L</starch> so that the Starch
 object gets built as early as possible.
 
 =cut
 
-after setup => sub{
+after setup_finalize => sub{
     my ($c) = @_;
     $c->starch();
     return;
