@@ -4,10 +4,6 @@ use strictures 1;
 use Test::More;
 use Test::WWW::Mechanize::PSGI;
 
-my $test_data;
-
-our $starch;
-
 {
     package MyApp::Controller::Root;
     use Moose;
@@ -16,7 +12,6 @@ our $starch;
     __PACKAGE__->config->{namespace} = '';
     sub noop :Local :Args(0) {
         my ($self, $c) = @_;
-        $main::starch = $c->starch();
         return;
     }
     sub session :Local :Args(0) {
@@ -57,6 +52,7 @@ my $mech = Test::WWW::Mechanize::PSGI->new(
 );
 
 $mech->get_ok('/noop');
+$mech->get_ok('/session');
 $mech->get_ok('/set/foo/hello');
 $mech->get_ok('/get/foo');
 
