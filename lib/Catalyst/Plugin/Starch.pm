@@ -108,6 +108,17 @@ because they do not need to be.
 The above listed un-implemented methods and attributes will throw an exception
 if called.
 
+=head1 PERFORMANCE
+
+Benchmarking L<Catalyst::Plugin::Session> and L<Catalyst::Plugin::Starch>
+it was found that Starch is 1.5x faster (or, ~65% the run-time).  While this
+is a fairly big improvement, the difference in real-life should be a savings
+of one or two millisecond per request.
+
+Most of this performance gain is made by the fact that Starch does not use
+L<Moose> and instead it uses L<Moo> which has many run-time performance
+benefits.
+
 =cut
 
 foreach my $method (qw(

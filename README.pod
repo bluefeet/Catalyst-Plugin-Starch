@@ -94,6 +94,17 @@ because they do not need to be.
 The above listed un-implemented methods and attributes will throw an exception
 if called.
 
+=head1 PERFORMANCE
+
+Benchmarking L<Catalyst::Plugin::Session> and L<Catalyst::Plugin::Starch>
+it was found that Starch is 1.5x faster (or, ~65% the run-time).  While this
+is a fairly big improvement, the difference in real-life should be a savings
+of one or two millisecond per request.
+
+Most of this performance gain is made by the fact that Starch does not use
+L<Moose> and instead it uses L<Moo> which has many run-time performance
+benefits.
+
 =head1 ATTRIBUTES
 
 =head2 sessionid
@@ -199,9 +210,9 @@ end of the request.
 These methods in the Catalyst application object are modified.
 See L<Catalyst::Manual::Internals> for more information.
 
-=head2 setup
+=head2 setup_finalize
 
-After Catalyst's C<setup> this calls L</starch> so that the Starch
+After Catalyst's C<setup_finalize> this calls L</starch> so that the Starch
 object gets built as early as possible.
 
 =head2 finalize_body
