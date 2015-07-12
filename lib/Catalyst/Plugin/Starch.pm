@@ -2,7 +2,7 @@ package Catalyst::Plugin::Starch;
 
 =head1 NAME
 
-Catalyst::Plugin::Starch - Catalyst session plugin via Web::Starch.
+Catalyst::Plugin::Starch - Catalyst session plugin via Starch.
 
 =head1 SYNOPSIS
 
@@ -22,7 +22,7 @@ Catalyst::Plugin::Starch - Catalyst session plugin via Web::Starch.
 
 =head1 DESCRIPTION
 
-Integrates L<Web::Starch> with L<Catalyst> providing a compatible replacement
+Integrates L<Starch> with L<Catalyst> providing a compatible replacement
 for L<Catalyst::Plugin::Session>.
 
 =head1 CONFIGURATION
@@ -36,15 +36,15 @@ key in your root Catalyst application class:
         },
     );
 
-In addition to the arguments you would normally pass to L<Web::Starch> you
+In addition to the arguments you would normally pass to L<Starch> you
 can also pass a C<plugins> argument which will be combined with the plugins
 from L</default_starch_plugins>.
 
-See L<Web::Starch::Manual> for more information about configuring Starch.
+See L<Starch::Manual> for more information about configuring Starch.
 
 =cut
 
-use Web::Starch;
+use Starch;
 use Types::Standard -types;
 use Types::Common::String -types;
 use Catalyst::Exception;
@@ -213,13 +213,13 @@ sub default_starch_plugins {
 
 =head2 starch_session
 
-This holds the underlying L<Web::Starch::Session> object.
+This holds the underlying L<Starch::Session> object.
 
 =cut
 
 has starch_session => (
     is        => 'ro',
-    isa        => InstanceOf[ 'Web::Starch::Session' ],
+    isa        => InstanceOf[ 'Starch::Session' ],
     lazy      => 1,
     builder   => '_build_starch_session',
     writer    => '_set_starch_session',
@@ -237,14 +237,14 @@ sub _build_starch_session {
 
 =head2 starch
 
-The L<Web::Starch> object.  This gets automatically constructed from
+The L<Starch> object.  This gets automatically constructed from
 the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
 
 =cut
 
 class_has starch => (
     is      => 'ro',
-    isa     => InstanceOf[ 'Web::Starch' ],
+    isa     => InstanceOf[ 'Starch' ],
     lazy    => 1,
     builder => '_build_starch',
 );
@@ -255,7 +255,7 @@ sub _build_starch {
     Catalyst::Exception->throw( 'No Catalyst configuration was specified for Plugin::Starch' ) if !$starch;
     Catalyst::Exception->throw( 'Plugin::Starch config was not a hash ref' ) if ref($starch) ne 'HASH';
 
-    my $args = Web::Starch->BUILDARGS( $starch );
+    my $args = Starch->BUILDARGS( $starch );
     my $plugins = delete( $args->{plugins} ) || [];
 
     $plugins = [
@@ -263,7 +263,7 @@ sub _build_starch {
         @$plugins,
     ];
 
-    return Web::Starch->new_with_plugins( $plugins, $args );
+    return Starch->new_with_plugins( $plugins, $args );
 }
 
 =head1 METHODS

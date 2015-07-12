@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-Catalyst::Plugin::Starch - Catalyst session plugin via Web::Starch.
+Catalyst::Plugin::Starch - Catalyst session plugin via Starch.
 
 =head1 SYNOPSIS
 
@@ -22,7 +22,7 @@ Catalyst::Plugin::Starch - Catalyst session plugin via Web::Starch.
 
 =head1 DESCRIPTION
 
-Integrates L<Web::Starch> with L<Catalyst> providing a compatible replacement
+Integrates L<Starch> with L<Catalyst> providing a compatible replacement
 for L<Catalyst::Plugin::Session>.
 
 =head1 CONFIGURATION
@@ -36,11 +36,11 @@ key in your root Catalyst application class:
         },
     );
 
-In addition to the arguments you would normally pass to L<Web::Starch> you
+In addition to the arguments you would normally pass to L<Starch> you
 can also pass a C<plugins> argument which will be combined with the plugins
 from L</default_starch_plugins>.
 
-See L<Web::Starch::Manual> for more information about configuring Starch.
+See L<Starch::Manual> for more information about configuring Starch.
 
 =head1 COMPATIBILITY
 
@@ -146,13 +146,13 @@ their own plugins into the array ref.
 
 =head2 starch_session
 
-This holds the underlying L<Web::Starch::Session> object.
+This holds the underlying L<Starch::Session> object.
 
 =head1 CLASS ATTRIBUTES
 
 =head2 starch
 
-The L<Web::Starch> object.  This gets automatically constructed from
+The L<Starch> object.  This gets automatically constructed from
 the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
 
 =head1 METHODS
