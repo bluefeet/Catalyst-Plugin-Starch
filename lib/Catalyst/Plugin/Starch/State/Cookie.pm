@@ -9,8 +9,8 @@ Catalyst::Plugin::Starch::State::Cookie - Record Starch session state in a cooki
     package MyApp;
     
     use Catalyst qw(
-        Starch
         Starch::State::Cookie
+        Starch
     );
 
 =head1 DESCRIPTION

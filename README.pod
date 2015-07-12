@@ -9,8 +9,8 @@ Catalyst::Plugin::Starch - Catalyst session plugin via Starch.
     package MyApp;
     
     use Catalyst qw(
-        Starch
         Starch::State::Cookie
+        Starch
     );
     
     __PACKAGE__->config(
@@ -27,6 +27,12 @@ for L<Catalyst::Plugin::Session>.
 
 Is is recommended that as part of implementing this module in your site
 that you also create an in-house unit test using L<Test::Starch>.
+
+Note that this plugin is a L<Moose::Role> which means that Catalyst will
+apply the plugin to the Catalyst object in reverse order than that listed
+in the C<use Catalyst> stanza.  This may not matter for you, but to be safe,
+declare the C<Starch> plugin B<after> any other Starch plugins or any other
+plugins that depend on sessions.
 
 =head1 CONFIGURATION
 
