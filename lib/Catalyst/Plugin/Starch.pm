@@ -25,6 +25,9 @@ Catalyst::Plugin::Starch - Catalyst session plugin via Starch.
 Integrates L<Starch> with L<Catalyst> providing a compatible replacement
 for L<Catalyst::Plugin::Session>.
 
+Is is recommended that as part of implementing this module in your site
+that you also create an in-house unit test using L<Test::Starch>.
+
 =head1 CONFIGURATION
 
 Configuring Starch is a matter of setting the L<Plugin::Starch> configuration
@@ -368,6 +371,27 @@ Currently this always returns C<1>.
 =cut
 
 sub session_is_valid { 1 }
+
+=head2 delete_expired_sessions
+
+Calls L<Web::Starch::Store/reap_expired> on the store.  This method is
+here for backwards compatibility with L<Catalyst::Plugin::Session>
+which expects you to delete expired sessions within the context of
+an HTTP request.  Since starch is available independently from Catalyst
+you should consider calling C<reap_expired> yourself within a cronjob.
+
+If the store does not support expired session reaping then an
+exception will be thrown.
+
+=cut
+
+sub delete_expired_sessions {
+    my ($self) = @_;
+
+    $self->starch->store->reap_expired();
+
+    return;
+}
 
 =head1 INTERNAL METHODS
 
