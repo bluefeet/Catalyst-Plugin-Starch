@@ -85,18 +85,6 @@ sub get_session_cookie {
     return $cookie;
 }
 
-=head1 MODIFIED METHODS
-
-These methods in the Catalyst application object are modified.
-See L<Catalyst::Manual::Internals> for more information.
-
-=head2 prepare_cookies
-
-Reads the session cookie from the request just after
-C<prepare_cookies> is called.
-
-=cut
-
 after prepare_cookies => sub{
     my ($c) = @_;
     my $cookie = $c->get_session_cookie();
@@ -105,13 +93,6 @@ after prepare_cookies => sub{
     return;
 };
 
-=head2 finalize_headers
-
-Adds the session cookie to the response just before
-C<finalize_headers> is called.
-
-=cut
-
 before finalize_headers => sub{
     my ($c) = @_;
     return if !$c->_has_sessionid();
@@ -119,13 +100,6 @@ before finalize_headers => sub{
     $c->res->cookies->{ $cookie_name } = $c->starch_session->cookie_args();
     return;
 };
-
-=head2 default_starch_plugins
-
-Adds L<Starch::Plugin::CookieArgs> to the list of Starch plugins
-that L<Catalyst::Plugin::Starch> will apply.
-
-=cut
 
 around default_starch_plugins => sub{
     my $orig = shift;

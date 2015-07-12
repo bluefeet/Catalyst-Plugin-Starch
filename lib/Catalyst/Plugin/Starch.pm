@@ -105,7 +105,7 @@ C<create_session_id_if_needed>, C<delete_session_id>, C<extend_session_expires>,
 C<extend_session_id>, C<get_session_id>, C<reset_session_expires>,
 C<set_session_id>, and C<initial_session_expires>
 methods are not supported.  Some of them could be, if a good case for their
-existance presents itself.
+existence presents itself.
 
 =item *
 
@@ -114,7 +114,7 @@ because they do not need to be.
 
 =back
 
-The above listed un-implemented methods and attributes will throw an exception
+The above listed unimplemented methods and attributes will throw an exception
 if called.
 
 =head1 PERFORMANCE
@@ -283,7 +283,7 @@ sub _build_starch {
     $c->session( foo => 45 );
     $c->session({ foo => 45 });
 
-Returns a hashref of the session data which may be modified and
+Returns a hash ref of the session data which may be modified and
 will be stored at the end of the request.
 
 A hash list or a hash ref may be passed to set values.
@@ -399,18 +399,6 @@ sub delete_expired_sessions {
     return;
 }
 
-=head1 INTERNAL METHODS
-
-These methods are internal to this plugin and should not be called
-outside of it without exterme caution.
-
-=head2 finalize_session
-
-This is called by L</finalize_body> to save the session data near the
-end of the request.
-
-=cut
-
 sub finalize_session {
     my ($c) = @_;
 
@@ -425,44 +413,17 @@ sub finalize_session {
     return;
 }
 
-=head1 MODIFIED METHODS
-
-These methods in the Catalyst application object are modified.
-See L<Catalyst::Manual::Internals> for more information.
-
-=head2 setup_finalize
-
-After Catalyst's C<setup_finalize> this calls L</starch> so that the Starch
-object gets built as early as possible.
-
-=cut
-
 after setup_finalize => sub{
     my ($c) = @_;
     $c->starch();
     return;
 };
 
-=head2 finalize_body
-
-Saves the session data, before C<finalize_body> is called, by calling
-L</finalize_session>.
-
-=cut
-
 before finalize_body => sub{
     my ($c) = @_;
     $c->finalize_session();
     return;
 };
-
-=head2 dump_these
-
-Adds the session data to the C<dump_these> method's array
-ref so that the session is include on the Catalyst debug
-page.
-
-=cut
 
 around dump_these => sub{
     my $orig = shift;
