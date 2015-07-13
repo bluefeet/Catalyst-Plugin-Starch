@@ -36,7 +36,7 @@ plugins that depend on sessions.
 
 =head1 CONFIGURATION
 
-Configuring Starch is a matter of setting the L<Plugin::Starch> configuration
+Configuring Starch is a matter of setting the C<Plugin::Starch> configuration
 key in your root Catalyst application class:
 
     __PACKAGE__->config(
@@ -49,7 +49,7 @@ In addition to the arguments you would normally pass to L<Starch> you
 can also pass a C<plugins> argument which will be combined with the plugins
 from L</default_starch_plugins>.
 
-See L<Starch::Manual> for more information about configuring Starch.
+See L<Starch> for more information about configuring Starch.
 
 =cut
 
