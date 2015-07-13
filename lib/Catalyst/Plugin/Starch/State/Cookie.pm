@@ -119,3 +119,5 @@ __END__
 See L<Catalyst::Plugin::Starch/AUTHOR> and
 L<Catalyst::Plugin::Starch/LICENSE>.
 
+=cut
+
