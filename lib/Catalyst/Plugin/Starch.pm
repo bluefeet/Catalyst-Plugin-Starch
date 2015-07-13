@@ -172,7 +172,7 @@ is no session then C<0> will be returned.
 sub session_expires {
     my ($self) = @_;
     return 0 if !$self->_has_sessionid();
-    my $session = $self->starch_session();
+    my $session = $self->starch_state();
     return $session->modified() + $session->expires();
 }
 
@@ -220,40 +220,40 @@ sub default_starch_plugins {
     return [];
 }
 
-=head2 starch_session
+=head2 starch_state
 
-This holds the underlying L<Starch::Session> object.
+This holds the underlying L<Starch::State> object.
 
 =cut
 
-has starch_session => (
+has starch_state => (
     is        => 'ro',
-    isa        => InstanceOf[ 'Starch::Session' ],
+    isa        => InstanceOf[ 'Starch::State' ],
     lazy      => 1,
-    builder   => '_build_starch_session',
-    writer    => '_set_starch_session',
-    predicate => '_has_starch_session',
-    clearer   => '_clear_starch_session',
+    builder   => '_build_starch_state',
+    writer    => '_set_starch_state',
+    predicate => '_has_starch_state',
+    clearer   => '_clear_starch_state',
 );
-sub _build_starch_session {
+sub _build_starch_state {
     my ($c) = @_;
-    my $session = $c->starch->session( $c->sessionid() );
-    $c->_set_sessionid( $session->id() );
-    return $session;
+    my $state = $c->starch->state( $c->sessionid() );
+    $c->_set_sessionid( $state->id() );
+    return $state;
 }
 
 =head1 CLASS ATTRIBUTES
 
 =head2 starch
 
-The L<Starch> object.  This gets automatically constructed from
+The L<Starch::Manager> object.  This gets automatically constructed from
 the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
 
 =cut
 
 class_has starch => (
     is      => 'ro',
-    isa     => InstanceOf[ 'Starch' ],
+    isa     => InstanceOf[ 'Starch::Manager' ],
     lazy    => 1,
     builder => '_build_starch',
 );
@@ -264,7 +264,7 @@ sub _build_starch {
     Catalyst::Exception->throw( 'No Catalyst configuration was specified for Plugin::Starch' ) if !$starch;
     Catalyst::Exception->throw( 'Plugin::Starch config was not a hash ref' ) if ref($starch) ne 'HASH';
 
-    my $args = Starch->BUILDARGS( $starch );
+    my $args = Starch::Manager->BUILDARGS( $starch );
     my $plugins = delete( $args->{plugins} ) || [];
 
     $plugins = [
@@ -272,7 +272,10 @@ sub _build_starch {
         @$plugins,
     ];
 
-    return Starch->new_with_plugins( $plugins, $args );
+    return Starch->new(
+        plugins => $plugins,
+        %$args,
+    );
 }
 
 =head1 METHODS
@@ -293,7 +296,7 @@ A hash list or a hash ref may be passed to set values.
 sub session {
     my $c = shift;
 
-    my $data = $c->starch_session->data();
+    my $data = $c->starch_state->data();
     return $data if !@_;
 
     my $new_data;
@@ -323,8 +326,8 @@ Deletes the session, optionally with a reason specified.
 sub delete_session {
     my ($c, $reason) = @_;
 
-    if ($c->_has_starch_session()) {
-        $c->starch_session->delete();
+    if ($c->_has_starch_state()) {
+        $c->starch_state->delete();
     }
 
     $c->_set_session_delete_reason( $reason );
@@ -350,9 +353,9 @@ sub change_session_id {
 
     $c->_clear_sessionid();
 
-    $c->starch_session->reset_id() if $c->_has_starch_session();
+    $c->starch_state->reset_id() if $c->_has_starch_state();
 
-    $c->_set_sessionid( $c->starch_session->id() );
+    $c->_set_sessionid( $c->starch_state->id() );
 
     return;
 }
@@ -366,7 +369,7 @@ global expires set in L</CONFIGURATION>.
 
 sub change_session_expires {
     my $self = shift;
-    $self->starch_session->set_expires( @_ );
+    $self->starch_state->set_expires( @_ );
     return;
 }
 
@@ -380,7 +383,7 @@ sub session_is_valid { 1 }
 
 =head2 delete_expired_sessions
 
-Calls L<Web::Starch::Store/reap_expired> on the store.  This method is
+Calls L<Starch::Store/reap_expired> on the store.  This method is
 here for backwards compatibility with L<Catalyst::Plugin::Session>
 which expects you to delete expired sessions within the context of
 an HTTP request.  Since starch is available independently from Catalyst
@@ -405,10 +408,10 @@ sub finalize_session {
     $c->_clear_sessionid();
     $c->_clear_session_delete_reason();
 
-    return if !$c->_has_starch_session();
+    return if !$c->_has_starch_state();
 
-    $c->starch_session->save();
-    $c->_clear_starch_session();
+    $c->starch_state->save();
+    $c->_clear_starch_state();
 
     return;
 }

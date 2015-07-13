@@ -97,7 +97,7 @@ before finalize_headers => sub{
     my ($c) = @_;
     return if !$c->_has_sessionid();
     my $cookie_name = $c->starch->cookie_name();
-    $c->res->cookies->{ $cookie_name } = $c->starch_session->cookie_args();
+    $c->res->cookies->{ $cookie_name } = $c->starch_state->cookie_args();
     return;
 };
 

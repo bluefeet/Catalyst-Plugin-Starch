@@ -153,15 +153,15 @@ L<Catalyst::Plugin::Starch::State::Cookie>, to be able to declare
 additional Starch plugins by C<around()>ing this and injecting
 their own plugins into the array ref.
 
-=head2 starch_session
+=head2 starch_state
 
-This holds the underlying L<Starch::Session> object.
+This holds the underlying L<Starch::State> object.
 
 =head1 CLASS ATTRIBUTES
 
 =head2 starch
 
-The L<Starch> object.  This gets automatically constructed from
+The L<Starch::Manager> object.  This gets automatically constructed from
 the C<Plugin::Starch> Catalyst configuration key per L</CONFIGURATION>.
 
 =head1 METHODS
@@ -206,7 +206,7 @@ Currently this always returns C<1>.
 
 =head2 delete_expired_sessions
 
-Calls L<Web::Starch::Store/reap_expired> on the store.  This method is
+Calls L<Starch::Store/reap_expired> on the store.  This method is
 here for backwards compatibility with L<Catalyst::Plugin::Session>
 which expects you to delete expired sessions within the context of
 an HTTP request.  Since starch is available independently from Catalyst
