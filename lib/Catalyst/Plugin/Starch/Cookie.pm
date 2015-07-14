@@ -1,15 +1,15 @@
-package Catalyst::Plugin::Starch::State::Cookie;
+package Catalyst::Plugin::Starch::Cookie;
 
 =head1 NAME
 
-Catalyst::Plugin::Starch::State::Cookie - Record Starch session state in a cookie.
+Catalyst::Plugin::Starch::Cookie - Record Starch session state in a cookie.
 
 =head1 SYNOPSIS
 
     package MyApp;
     
     use Catalyst qw(
-        Starch::State::Cookie
+        Starch::Cookie
         Starch
     );
 
@@ -34,7 +34,7 @@ use namespace::clean;
 =head1 COMPATIBILITY
 
 Most of the methods documented in
-L<Catalyst::Plugin::Session::State::Cookie/METHODS> are not
+L<Catalyst::Plugin::Session::Cookie/METHODS> are not
 supported at this time:
 
 =over
@@ -63,7 +63,7 @@ foreach my $method (qw(
     calculate_session_cookie_expires cookie_is_rejecting
 )) {
     fresh $method => sub{
-        Catalyst::Exception->throw( "The $method method is not implemented by Catalyst::Plugin::Starch::State::Cookie" );
+        Catalyst::Exception->throw( "The $method method is not implemented by Catalyst::Plugin::Starch::Cookie" );
     };
 }
 

@@ -9,7 +9,7 @@ Catalyst::Plugin::Starch - Catalyst session plugin via Starch.
     package MyApp;
     
     use Catalyst qw(
-        Starch::State::Cookie
+        Starch::Cookie
         Starch
     );
     
@@ -210,7 +210,7 @@ object will be built with.  Note that this does not include any
 additional plugins you specify in the L</CONFIGURATION>.
 
 The intention of this attribute is for other Catalyst plugins, such as
-L<Catalyst::Plugin::Starch::State::Cookie>, to be able to declare
+L<Catalyst::Plugin::Starch::Cookie>, to be able to declare
 additional Starch plugins by C<around()>ing this and injecting
 their own plugins into the array ref.
 
