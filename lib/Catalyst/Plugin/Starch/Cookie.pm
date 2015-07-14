@@ -2,7 +2,7 @@ package Catalyst::Plugin::Starch::Cookie;
 
 =head1 NAME
 
-Catalyst::Plugin::Starch::Cookie - Record Starch session state in a cookie.
+Catalyst::Plugin::Starch::Cookie - Track starch state in a cookie.
 
 =head1 SYNOPSIS
 
