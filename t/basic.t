@@ -33,7 +33,7 @@ use Test::WWW::Mechanize::PSGI;
     package MyApp;
     use Catalyst qw(
         Starch
-        Starch::State::Cookie
+        Starch::Cookie
     );
     MyApp->config(
         'Plugin::Starch' => {

@@ -335,6 +335,18 @@ sub delete_session {
     return;
 }
 
+=head2 save_session
+
+Saves the session to the store.
+
+=cut
+
+sub save_session {
+    my ($c) = @_;
+    $c->starch_state->save();
+    return;
+}
+
 =head2 change_session_id
 
     $c->change_session_id();
@@ -410,7 +422,7 @@ sub finalize_session {
 
     return if !$c->_has_starch_state();
 
-    $c->starch_state->save();
+    $c->save_session();
     $c->_clear_starch_state();
 
     return;

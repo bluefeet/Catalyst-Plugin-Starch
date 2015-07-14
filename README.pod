@@ -184,6 +184,10 @@ A hash list or a hash ref may be passed to set values.
 
 Deletes the session, optionally with a reason specified.
 
+=head2 save_session
+
+Saves the session to the store.
+
 =head2 change_session_id
 
     $c->change_session_id();
