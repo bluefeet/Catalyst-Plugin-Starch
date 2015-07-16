@@ -423,7 +423,6 @@ sub finalize_session {
     return if !$c->_has_starch_state();
 
     $c->save_session();
-    $c->_clear_starch_state();
 
     return;
 }
