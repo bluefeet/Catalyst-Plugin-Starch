@@ -87,9 +87,14 @@ sub get_session_cookie {
 
 after prepare_cookies => sub{
     my ($c) = @_;
+
     my $cookie = $c->get_session_cookie();
     return if !$cookie;
-    $c->_set_sessionid( $cookie->value() );
+
+    my $id = $cookie->value();
+    return if !$c->starch->state_id_type->check( $id );
+
+    $c->_set_sessionid( $id );
     return;
 };
 

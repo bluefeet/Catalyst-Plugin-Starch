@@ -2,7 +2,10 @@ Revision history for Perl extension Catalyst::Plugin::Starch.
 
 {{$NEXT}}
 
+ - Silently ignore invalid session IDs from cookies.
+
 0.02 2015-07-16
+
  - Don't clear the state object in finalize_body to be more like
    Catalyst::Plugin::Session.
  - Fix several dependency issues.

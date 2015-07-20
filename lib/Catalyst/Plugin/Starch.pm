@@ -155,7 +155,6 @@ The ID of the session.
 
 has sessionid => (
     is        => 'ro',
-    isa       => NonEmptySimpleStr,
     init_arg  => undef,
     writer    => '_set_sessionid',
     clearer   => '_clear_sessionid',
