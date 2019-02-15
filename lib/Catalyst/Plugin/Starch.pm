@@ -1,5 +1,7 @@
 package Catalyst::Plugin::Starch;
 
+$Catalyst::Plugin::Starch::VERSION = '0.03';
+
 =head1 NAME
 
 Catalyst::Plugin::Starch - Catalyst session plugin via Starch.
