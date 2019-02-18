@@ -1,6 +1,6 @@
 package Catalyst::Plugin::Starch::Cookie;
 
-$Catalyst::Plugin::Starch::Cookie::VERSION = '0.03';
+$Catalyst::Plugin::Starch::Cookie::VERSION = '0.04';
 
 =head1 NAME
 
