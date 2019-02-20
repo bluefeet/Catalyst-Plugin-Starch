@@ -1,5 +1,6 @@
 package Catalyst::Plugin::Starch;
-
+use 5.010001;
+use strictures 2;
 our $VERSION = '0.04';
 
 =head1 NAME
@@ -64,7 +65,6 @@ use Class::Method::Modifiers qw( fresh );
 
 use Moose::Role;
 use MooseX::ClassAttribute;
-use strictures 2;
 use namespace::clean;
 
 =head1 COMPATIBILITY
