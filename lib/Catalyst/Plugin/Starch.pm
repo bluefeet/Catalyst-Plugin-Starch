@@ -1,7 +1,7 @@
 package Catalyst::Plugin::Starch;
 use 5.010001;
 use strictures 2;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME
 
