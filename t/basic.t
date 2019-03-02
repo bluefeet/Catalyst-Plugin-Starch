@@ -8,8 +8,7 @@ use Test::WWW::Mechanize::PSGI;
 {
     package MyApp::Controller::Root;
     use Moose;
-    use Test::More;
-    use Test::Fatal;
+    use Test2::V0 qw( !meta );
     BEGIN { extends 'Catalyst::Controller' }
     __PACKAGE__->config->{namespace} = '';
     sub noop :Local :Args(0) {
@@ -43,7 +42,7 @@ use Test::WWW::Mechanize::PSGI;
             check_session_plugin_requirements
         )) {
             like(
-                exception { $c->$method() },
+                dies { $c->$method() },
                 qr{method is not implemented},
                 "unimplemented, $method, method threw exception",
             );
@@ -71,7 +70,7 @@ use Test::WWW::Mechanize::PSGI;
         ok( $c->session_is_valid(), 'session is valid' );
 
         like(
-            exception { $c->delete_expired_sessions() },
+            dies { $c->delete_expired_sessions() },
             qr{does not support expired state reaping},
             'reaping expired sessions died',
         );

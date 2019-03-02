@@ -43,11 +43,14 @@
       "runtime" : {
          "requires" : {
             "Catalyst" : "5.90001",
+            "Catalyst::Exception" : "0",
             "Class::Method::Modifiers" : "2.00",
-            "Moose" : "2.0000",
+            "Moose::Role" : "2.0000",
             "MooseX::ClassAttribute" : "0.27",
+            "Scalar::Util" : "0",
             "Starch" : "0.10",
-            "Type::Tiny" : "1.000005",
+            "Types::Common::String" : "1.000005",
+            "Types::Standard" : "1.000005",
             "namespace::clean" : "0.24",
             "perl" : "5.010001",
             "strictures" : "2.000000"
@@ -55,6 +58,7 @@
       },
       "test" : {
          "requires" : {
+            "Moose" : "2.0000",
             "Test2::V0" : "0.000094",
             "Test::WWW::Mechanize::PSGI" : "0.35"
          }
@@ -73,6 +77,7 @@
       }
    },
    "version" : "0.04",
+   "x_authority" : "cpan:BLUEFEET",
    "x_contributors" : [
       "Aran Deltac <aran@ziprecruiter.com>"
    ],

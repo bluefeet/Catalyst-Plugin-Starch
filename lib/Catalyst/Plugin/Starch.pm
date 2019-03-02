@@ -463,9 +463,9 @@ Catalyst-Plugin-Starch GitHub issue tracker:
 
 L<https://github.com/bluefeet/Catalyst-Plugin-Starch/issues>
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Aran Clary Deltac <bluefeetE<64>gmail.com>
+    Aran Clary Deltac <bluefeet@gmail.com>
 
 =head1 ACKNOWLEDGEMENTS
 
